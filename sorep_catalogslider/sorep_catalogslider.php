@@ -36,7 +36,7 @@ class Sorep_CatalogSlider extends Module
 		parent::__construct();
 	 
 		$this->displayName = $this->l('Sorep Catalog Slider');
-		$this->description = $this->l('Sorep Catalog Slider.');
+		$this->description = $this->l('Carrossel de produtos sorep');
 	 
 		$this->confirmUninstall = $this->l('Are you sure you want to uninstall?');
 		
@@ -51,6 +51,16 @@ class Sorep_CatalogSlider extends Module
   
 	public function install()
 	{
+
+          // Legacy BO Controller does not use namespaces
+          include_once dirname(__FILE__).'/controllers/admin/adminsorep_catalogsliderController.php';
+
+        if (Shop::isFeatureActive()) {
+            Shop::setContext(Shop::CONTEXT_ALL);
+        }
+
+
+
 		return parent::install() && 
 		$this->registerHook('displayHome') &&
 		$this->registerHook('header') &&
@@ -64,12 +74,18 @@ class Sorep_CatalogSlider extends Module
 
 	public function hookDisplayHome($params)
     {
+        $sql = " select * from `"._DB_PREFIX_."product` ";
+        $acessory_data = Db::getInstance()->executeS($sql);
         $this->context->smarty->assign([
             'sorep_catalogslider' => Configuration::get('sorep_catalogslider'),
-            'sorep_catalogslider' => $this->context->link->getModuleLink('sorep_catalogslider', 'displayHome')
+            'sorep_catalogslider' => $this->context->link->getModuleLink('sorep_catalogslider', 'displayHome'),
+            'accessory_data' => $acessory_data
         ]);
 
-        return $this->display(__FILE__, 'slider.tpl');
+        $this->smarty->assign('acessory_data', $acessory_data);
+
+        $this->_html .= $this->display(__FILE__, 'slider.tpl');
+        return $this->_html;
     }
 
 
@@ -79,31 +95,32 @@ class Sorep_CatalogSlider extends Module
 {
   $this->context->controller->addCSS($this->_path.'views/css/sorep_catalogslider.css', 'all');
 }
-// public function hookActionFrontControllerSetMedia()
-//     {
-//         $this->context->controller->registerStylesheet(
-//             'sorep_catalogslider',
-//             $this->_path.'views/css/sorep_catalogslider.css',
-//             [
-//                 'media' => 'all',
-//                 'priority' => 1000,
-//             ]
-//         );
+public function hookActionFrontControllerSetMedia()
+    {
+        $this->context->controller->registerStylesheet(
+            'sorep_catalogslider',
+            $this->_path.'views/css/sorep_catalogslider.css',
+            [
+                'media' => 'all',
+                'priority' => 1000,
+            ]
+        );
 
-// 		$this->context->controller->registerJavascript(
-//             'sorep_catalogslider-javascript',
-//             $this->_path.'views/js/main.js',
-//             [
-//                 'position' => 'bottom',
-//                 'priority' => 1000,
-//             ]
-//         );
-//     }
+		$this->context->controller->registerJavascript(
+            'sorep_catalogslider-javascript',
+            $this->_path.'views/js/main.js',
+            [
+                'position' => 'bottom',
+                'priority' => 1000,
+            ]
+        );
+    }
 public function hookHeader ($params)
 {
      $this->context->controller->addJS($this->_path.'views/js/main.js');
      $this->context->controller->addCSS($this->_path.'views/css/sorep_catalogslider.css');
 }
+
 
 
 }
