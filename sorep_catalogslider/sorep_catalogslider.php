@@ -74,15 +74,29 @@ class Sorep_CatalogSlider extends Module
 
 	public function hookDisplayHome($params)
     {
-        $sql = " select * from `"._DB_PREFIX_."product` ";
-        $acessory_data = Db::getInstance()->executeS($sql);
+        $sql = " select * from `"._DB_PREFIX_."product` order by date_add desc limit 8";
+        $products = Db::getInstance()->executeS($sql);
         $this->context->smarty->assign([
             'sorep_catalogslider' => Configuration::get('sorep_catalogslider'),
-            'sorep_catalogslider' => $this->context->link->getModuleLink('sorep_catalogslider', 'displayHome'),
-            'accessory_data' => $acessory_data
+            'sorep_catalogslider' => $this->context->link->getModuleLink('sorep_catalogslider', 'displayHome')
         ]);
+        
+        $accessory_products=array();
+        foreach($products as $product){
 
-        $this->smarty->assign('acessory_data', $acessory_data);
+            $p = new Product($product["id_product"]);
+            $id_image = Product::getCover($product["id_product"]);
+            
+            if (sizeof($id_image) > 0) {
+                $image = new Image($id_image['id_image']);
+                $image_url = _PS_BASE_URL_._THEME_PROD_DIR_.$image->getExistingImgPath().".jpg";
+                $arraytest[] = $image_url;
+            }
+            $p->images=$arraytest;
+            $accessory_products[]=$p;
+        }
+
+        $this->smarty->assign('accessory_data', $accessory_products);
 
         $this->_html .= $this->display(__FILE__, 'slider.tpl');
         return $this->_html;
@@ -108,7 +122,7 @@ public function hookActionFrontControllerSetMedia()
 
 		$this->context->controller->registerJavascript(
             'sorep_catalogslider-javascript',
-            $this->_path.'views/js/main.js',
+            $this->_path.'views/js/default.js',
             [
                 'position' => 'bottom',
                 'priority' => 1000,
@@ -117,7 +131,7 @@ public function hookActionFrontControllerSetMedia()
     }
 public function hookHeader ($params)
 {
-     $this->context->controller->addJS($this->_path.'views/js/main.js');
+     $this->context->controller->addJS($this->_path.'views/js/default.js');
      $this->context->controller->addCSS($this->_path.'views/css/sorep_catalogslider.css');
 }
 

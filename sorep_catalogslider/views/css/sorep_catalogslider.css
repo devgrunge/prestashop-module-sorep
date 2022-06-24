@@ -1,3 +1,5 @@
+
+
 .catalog-carousel-title {
 margin-left: 2%;
 
@@ -14,8 +16,6 @@ height: 253px;
 left: -1px;
 top: 0px;
 margin-left: 2%;
-display: block;
-background: #30B7F1;
 }
 
 .product-type-title {
@@ -23,8 +23,9 @@ background: #30B7F1;
   height: 18px;
   left: -1px;
   top: 265px;
-  margin: 0 0 0 2%;
+  margin: 0 0 10% 2%;
   font-family: 'Chakra Petch';
+  display: table-row-group;
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
@@ -37,9 +38,10 @@ background: #30B7F1;
 height: 16px;
 left: -1px;
 top: 286px;
-margin: 0 0 0 2%;
+margin: 0 0 10% 2%;
 font-family: 'Chakra Petch';
 font-style: normal;
+display: inline;
 font-weight: 300;
 font-size: 12px;
 line-height: 16px;
@@ -49,10 +51,12 @@ color: #000000;
 .side-by-side-list {
   width: 100%;
   display: inline ; 
+  margin-bottom: 2%;
+  
   
 }
 
 .products-list {
   float: left;
-  margin: 2% 2% 0 2%;
+  margin: 2% 2% 2% 2%;
 }
